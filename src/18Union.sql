@@ -1,51 +1,44 @@
 USE Northwind
--- 1. TÃ¼m KayÄ±tlarÄ± Silme  
--- Customers tablosundaki tÃ¼m kayÄ±tlarÄ± siler.  
--- Dikkatli kullanÄ±lmalÄ±dÄ±r, Ã§Ã¼nkÃ¼ geri alÄ±namaz.  
-DELETE FROM Customers;  
--- 2. Belirli Bir KaydÄ± Silme  
--- Products tablosundaki ProductID'si 5 olan Ã¼rÃ¼nÃ¼ siler.  
--- WHERE ifadesi, hangi kaydÄ±n silineceÄŸini belirtir.  
-DELETE FROM Products  
-WHERE ProductID = 5;  
--- 3. Birden Fazla KaydÄ± Silme  
--- Orders tablosundaki toplam tutarÄ± 1000'den fazla olan tÃ¼m sipariÅŸleri siler.  
--- WHERE ifadesi ile birden fazla kaydÄ± hedefleyebiliriz.  
-DELETE FROM Orders  
-WHERE TotalAmount > 1000;  
--- 4. Belirli Bir KoÅŸula GÃ¶re KayÄ±t Silme  
--- 2023 yÄ±lÄ±nda verilen tÃ¼m sipariÅŸleri siler.  
--- YEAR() fonksiyonu ile tarih bazÄ±nda koÅŸul belirlenir.  
-DELETE FROM Orders  
-WHERE YEAR(OrderDate) = 2023;  
--- 5. NULL DeÄŸerine Sahip KayÄ±tlarÄ± Silme  
--- Products tablosundaki fiyatÄ± NULL olan tÃ¼m Ã¼rÃ¼nleri siler.  
--- NULL deÄŸerleri kontrol etmek iÃ§in IS NULL kullanÄ±lÄ±r.  
-DELETE FROM Products  
-WHERE Price IS NULL;  
--- 6. Alt Sorgu ile KayÄ±t Silme  
--- Customers tablosundaki CustomerID'si 1 olan mÃ¼ÅŸterinin sipariÅŸlerini siler.  
--- Alt sorgu kullanarak belirli bir koÅŸula gÃ¶re kayÄ±t silinebilir.  
-DELETE FROM Orders  
-WHERE CustomerID IN (SELECT CustomerID FROM Customers WHERE CustomerID = 1);  
--- 7. Belirli Bir Tarih AralÄ±ÄŸÄ±nda KayÄ±t Silme  
--- 2022 yÄ±lÄ±na ait tÃ¼m sipariÅŸleri siler.  
--- BETWEEN ifadesi ile tarih aralÄ±ÄŸÄ± belirlenir.  
-DELETE FROM Orders  
-WHERE OrderDate BETWEEN '2022-01-01' AND '2022-12-31';  
--- 8. Birden Fazla Tablodan KayÄ±t Silme  
--- Products tablosundaki fiyatÄ± 50'den fazla olan Ã¼rÃ¼nleri siler  
--- ve bu Ã¼rÃ¼nlere ait sipariÅŸleri Orders tablosundan siler.  
-DELETE FROM Orders  
-WHERE ProductID IN (SELECT ProductID FROM Products WHERE Price > 50);  
--- 9. JOIN ile KayÄ±t Silme  
--- Customers tablosundaki belirli bir ÅŸehirdeki mÃ¼ÅŸterilerin sipariÅŸlerini siler.  
--- INNER JOIN kullanarak iki tabloyu birleÅŸtiririz.  
-DELETE O  
-FROM Orders O  
-INNER JOIN Customers C ON O.CustomerID = C.CustomerID  
-WHERE C.City = 'New York';  
--- 10. Belirli Bir MÃ¼ÅŸteri ile Ä°liÅŸkili KayÄ±tlarÄ± Silme  
--- MÃ¼ÅŸteri kimliÄŸi 3 olan mÃ¼ÅŸterinin tÃ¼m sipariÅŸlerini siler.  
-DELETE FROM Orders  
-WHERE CustomerID = 3;  
+
+-- 1. Basit UNION Kullanýmý  
+-- Ýki farklý tablodan veri çekerek birleþtirme, tekrar eden kayýtlarý kaldýrma.  
+-- Products tablosundan ProductName ve Suppliers tablosundan ContactName alýnmaktadýr.  
+SELECT ProductName FROM Products  
+UNION  
+SELECT ContactName FROM Suppliers;  
+
+-- 2. Basit UNION ALL Kullanýmý  
+-- Ýki farklý tablodan veri çekerek birleþtirme, tekrar eden kayýtlarý da gösterme.  
+-- Products tablosundan ProductName ve Suppliers tablosundan ContactName alýnmaktadýr.  
+SELECT ProductName FROM Products  
+UNION ALL  
+SELECT ContactName FROM Suppliers;  
+
+-- 3. Farklý Sütun Sayýlarý ile UNION  
+-- Products tablosundan ProductName ve Suppliers tablosundan ContactName alýnmaktadýr.  
+-- Suppliers tablosundaki Country sütunu NULL olarak atanmýþtýr.  
+SELECT ProductName, NULL AS Country FROM Products  
+UNION  
+SELECT ContactName, Country FROM Suppliers;
+
+-- 4. UNION ALL ile Sýralama  
+-- Birleþtirilen sonuç kümesini sýralama.  
+-- Products tablosundan ProductName ve Suppliers tablosundan ContactName alýnmaktadýr.  
+SELECT ProductName FROM Products  
+UNION ALL  
+SELECT ContactName FROM Suppliers  
+ORDER BY 1 ASC;  -- Sýralama ProductName ve ContactName'e göre yapýlmaktadýr.
+
+-- 5. UNION ile Filtreleme  
+-- Belirli koþullara uyan kayýtlarý döndürmek için kullanýlýr.  
+-- Products tablosundan yalnýzca fiyatý 20'den büyük olan ürünler ve Suppliers tablosundan 'USA' ülkesindeki tedarikçiler alýnmaktadýr.  
+SELECT ProductName FROM Products WHERE UnitPrice > 20  
+UNION  
+SELECT ContactName FROM Suppliers WHERE Country = 'USA';
+
+-- 6. UNION ALL ile NULL Deðer Kullanýmý  
+-- NULL deðerleri birleþtirilen sonuç kümesinde kullanma.  
+-- Products tablosundan ProductName ve Suppliers tablosundan ContactName alýnmaktadýr.  
+SELECT ProductName FROM Products  
+UNION ALL  
+SELECT NULL AS ContactName FROM Suppliers;

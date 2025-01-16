@@ -1,0 +1,1 @@
+Bu script bir database yaratmaz. Bir database yaratın ve tabloların oluşması için betiği çalıştırın.
